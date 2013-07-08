@@ -1,0 +1,22 @@
+{
+    "builders": [
+        {
+            "api_key": "[YOUR API KEY]",
+            "boot_wait": "5s",
+            "client_id": "[YOUR CLIENT ID]",
+            "image_id": 365680,
+            "region_id": 1,
+            "size_id": 66,
+            "ssh_username": "root",
+            "ssh_timeout": "20m",
+            "type": "digitalocean",
+            "snapshot_name": "packer-centos-6_4-64"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "script": "provisioners/base-provision.sh"
+        }
+    ]
+}
