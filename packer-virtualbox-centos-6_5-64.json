@@ -1,0 +1,59 @@
+{
+  "builders": [
+    {
+      "boot_command": [
+        "<esc>",
+        "<wait>linux ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/anaconda-ks.cfg<enter>"
+      ],
+      "boot_wait": "5s",
+      "disk_size": 40000,
+      "guest_os_type": "RedHat_64",
+      "headless": true,
+      "http_directory": "./http_directory",
+      "iso_checksum": "0d9dc37b5dd4befa1c440d2174e88a87",
+      "iso_checksum_type": "md5",
+      "iso_url": "http://mirror.its.sfu.ca/mirror/CentOS/6.5/isos/x86_64/CentOS-6.5-x86_64-minimal.iso",
+      "ssh_password": "vagrant",
+      "ssh_username": "root",
+      "ssh_wait_timeout": "40m",
+      "shutdown_command": "echo 'packer' | sudo -S shutdown -P now",
+      "type": "virtualbox-iso",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "1024"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "2"
+        ]
+      ],
+      "vm_name": "packer-centos-6_5-64"
+    }
+  ],
+  "post-processors": [
+    {
+      "output": "centos-6_5-64_virtualbox.box",
+      "type": "vagrant"
+    }
+  ],
+  "provisioners": [
+    {
+      "override": {
+        "virtualbox-iso": {
+          "scripts": [
+                "provisioners/base-provision.sh",
+                "provisioners/install-virtualbox-guest-additions.sh",
+                "provisioners/clean-empty-space.sh"
+                ]
+        }
+      },
+      "type": "shell"
+    }
+  ]
+}
+

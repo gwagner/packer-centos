@@ -1,36 +1,36 @@
 #!/bin/bash
 
-yum install -y make bzip2 openssh-clients nano htop wget automake gcc cpp glibc-devel glibc-headers \
-glibc-kernheaders glibc glibc-common libgcc zlib-devel openssl-devel readline-devel
+yum install -y make bzip2 openssh-clients htop wget automake gcc cpp \
+    glibc-devel glibc-headers glibc-kernheaders glibc glibc-common libgcc \
+    zlib-devel openssl-devel readline-devel gcc-c++ patch readline \
+    readline-devel zlib libyaml-devel libffi-devel \
+    autoconf libtool bison
+
+#######################################################
+# Fix sudo requiring tty under Vagrant
+#######################################################
+sed --in-place=".BAK" 's/Defaults\(.*\)requiretty/Defaults\1!requiretty/' /etc/sudoers
 
 #######################################################
 # Build Ruby
 #######################################################
 
+echo "?? Building Ruby 1.9"
 # Keep it clean
 mkdir /tmp/ruby
 cd /tmp/ruby
 
-# autoconf 2.60 is required to build ruby
-wget http://ftp.gnu.org/gnu/autoconf/autoconf-2.60.tar.gz
-tar -xzf autoconf-2.60.tar.gz
-cd autoconf-2.60
-./configure --prefix=/usr && make && make install
+# install yaml
+wget http://pyyaml.org/download/libyaml/yaml-0.1.4.tar.gz
+tar xzvf yaml-0.1.4.tar.gz
+cd yaml-0.1.4 && ./configure --prefix=/usr && make && make install
 cd /tmp/ruby
 
-# build ruby-1.8.7-p358
-wget http://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.7-p358.tar.bz2
-tar -xjf ruby-1.8.7-p358.tar.bz2
-cd ruby-1.8.7-p358
-autoconf
+# build ruby-1.9.3-p484
+wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.3-p484.tar.bz2
+tar -xjf ruby-1.9.3-p484.tar.bz2
+cd ruby-1.9.3-p484
 ./configure --prefix=/usr && make && make install
-cd /tmp/ruby
-
-# install ruby-gems 1.8.10
-wget http://production.cf.rubygems.org/rubygems/rubygems-1.8.10.tgz
-tar -xzf rubygems-1.8.10.tgz
-cd rubygems-1.8.10
-/usr/bin/ruby setup.rb
 
 # clean up
 cd /
@@ -39,10 +39,19 @@ rm -rf /tmp/ruby
 #######################################################
 # Install Puppet
 #######################################################
+echo "?? Installing Puppet"
 gem install puppet --no-rdoc --no-ri
 
 # add the puppet group
 groupadd puppet
+
+
+#######################################################
+# Install Chef
+#######################################################
+echo "?? Installing chef"
+curl -L https://www.opscode.com/chef/install.sh | bash
+
 
 #######################################################
 # Turn off un-needed services
