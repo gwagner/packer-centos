@@ -32,7 +32,7 @@
           "2"
         ]
       ],
-      "vm_name": "packer-centos-6_4-64"
+      "vm_name": "packer-centos-6_5-64"
     }
   ],
   "post-processors": [
@@ -46,6 +46,7 @@
       "override": {
         "virtualbox-iso": {
           "scripts": [
+                "provisioners/base-provision.sh",
                 "provisioners/install-virtualbox-guest-additions.sh",
                 "provisioners/clean-empty-space.sh"
                 ]
